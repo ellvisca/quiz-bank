@@ -10,9 +10,11 @@ const authenticate = require('./middlewares/authenticate.js');
 router.post('/users/register', user.new);
 router.post('/users/login', user.login);
 
-//Quiz & Questio Router
+//Quiz & Question Router
 router.post('/quiz/new', authenticate, quiz.newQuiz);
 router.post('/quiz/addquestion', authenticate, quiz.addQuestion);
-router.get('/quiz/findall', authenticate, quiz.viewQuiz)
+router.get('/quiz/viewall', authenticate, quiz.viewQuiz);
+router.get('/quiz/viewid', authenticate, quiz.viewQuizById);
+router.post('/quiz/answer', authenticate, quiz.answerQuiz);
 
 module.exports = router;
