@@ -11,9 +11,17 @@ exports.newQuiz = async (req, res) => {
         let params = {
             title: req.body.title,
             owner: req.user._id,
+            admin: req.user.admin,
         }
-        let data = await Quiz.create(params)
-        success(res, data, 201)
+
+        if (params.admin == 0) {
+            error(res, "You are not admin", 422)
+        }
+
+        else if (params.admin == 1) {
+            let data = await Quiz.create(params)
+            success(res, data, 201)
+        }   
     }
 
     catch (err) {
@@ -61,8 +69,6 @@ exports.viewQuizById = async (req, res) => {
                 path: 'questions',
                 select: ['question', 'options', 'answer']
             })
-        console.log(data['questions'])
-        console.log(data['questions'][0]['answer'])
         success(res, data, 200)
     }
 
@@ -81,7 +87,7 @@ exports.answerQuiz = async (req, res) => {
             })
 
         let score = 0;
-        
+
         for (let i = 0; i < data['questions'].length; i++) {
             for (let j = i; i == j; j++) {
                 let answerParams = req.body;
@@ -93,7 +99,7 @@ exports.answerQuiz = async (req, res) => {
                 if (isCorrect) score += 10;
             }
         }
-        success(res, { score, of: (data['questions'].length)*10 }, 200)
+        success(res, { score, of: (data['questions'].length) * 10 }, 200)
     }
 
     catch (err) {

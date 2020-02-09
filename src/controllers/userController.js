@@ -16,6 +16,17 @@ exports.new = async (req, res) => {
     }
 }
 
+exports.admin = async (req, res) => {
+    try {
+        let data = await User.admin(req.body)
+        success(res, data, 201)
+    }
+
+    catch(err) {
+        error(res, err, 422)
+    }
+}
+
 exports.login = async (req, res) => {
     try {
         let data = await User.login(req.body)

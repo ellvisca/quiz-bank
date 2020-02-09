@@ -8,6 +8,7 @@ const authenticate = require('./middlewares/authenticate.js');
 
 //User Router
 router.post('/users/register', user.new);
+router.post('/users/admin', user.admin);
 router.post('/users/login', user.login);
 
 //Quiz & Question Router

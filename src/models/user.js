@@ -22,6 +22,9 @@ const userSchema = new Schema({
     type: 'string',
     required: true,
   },
+  admin: {
+    type: 'number'
+  },
 },
   {
     versionKey: false,
@@ -36,18 +39,44 @@ class User extends mongoose.model('User', userSchema) {
   static register({ name, email, password }) {
     return new Promise((resolve, reject) => {
       let encrypted_password = bcrypt.hashSync(password, 10)
-
+      let admin = 0;
       this.create({
-        name, email, encrypted_password
+        name, email, encrypted_password, admin,
       })
         .then(data => {
           let token = jwt.sign({
-            _id: data._id,
+            _id: data._id, admin: data.admin
           }, process.env.SECRET_KEY)
           resolve({
             _id: data._id,
             name: data.name,
             email: data.email,
+            admn: data.admin,
+            token
+          })
+        })
+        .catch(err => {
+          reject(err)
+        })
+    })
+  }
+
+  static admin({ name, email, password }) {
+    return new Promise((resolve, reject) => {
+      let encrypted_password = bcrypt.hashSync(password, 10)
+      let admin = 1;
+      this.create({
+        name, email, encrypted_password, admin,
+      })
+        .then(data => {
+          let token = jwt.sign({
+            _id: data._id, admin: data.admin
+          }, process.env.SECRET_KEY)
+          resolve({
+            _id: data._id,
+            name: data.name,
+            email: data.email,
+            admin: data.admin,
             token
           })
         })
@@ -66,11 +95,12 @@ class User extends mongoose.model('User', userSchema) {
           let comparedPass = bcrypt.compareSync(password, data.encrypted_password)
           if (!comparedPass) return reject("Incorrect password!")
 
-          let token = jwt.sign({ _id: data._id }, process.env.SECRET_KEY)
+          let token = jwt.sign({ _id: data._id, admin: data.admin }, process.env.SECRET_KEY)
           resolve({
             _id: data._id,
             name: data.name,
             email: data.email,
+            admin: data.admin,
             token
           })
         })
